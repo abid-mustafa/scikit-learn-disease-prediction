@@ -95,7 +95,7 @@
 <body>
     <header class="header-bar">
         <div class="logo">
-            <img src="Logo.png" alt="Logo">
+            <img src="{{ url_for('display_image', filename='Logo.png') }}" alt="Logo">
             <span class="twirly-text">DiagnoSense</span>
         </div>
         <nav class="nav-links">
@@ -158,19 +158,19 @@
         // Event listener for the Home link
         document.getElementById("homeLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "homePage.html"; // Redirect to home page
+            window.location.href = "/home"; // Redirect to home page
         });
 
         // Event listener for the Diseases link
         document.getElementById("diseasesLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "diseasesPage.html"; // Redirect to diseases page
+            window.location.href = "/diseases"; // Redirect to diseases page
         });
 
         // Event listener for the Report link
         document.getElementById("reportLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "reportPage.html"; // Redirect to report page
+            window.location.href = "/report"; // Redirect to report page
         });
     </script>
 </body>
