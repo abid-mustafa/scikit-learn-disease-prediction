@@ -95,7 +95,7 @@
 <body>
     <header class="header-bar">
         <div class="logo">
-            <img src="Logo.png" alt="Logo">
+            <img src="{{ url_for('display_image', filename='Logo.png') }}" alt="Logo">
             <span class="twirly-text">DiagnoSense</span>
         </div>
         <nav class="nav-links">
@@ -113,66 +113,36 @@
     <h1>THIS IS THE DISEASES PAGE</h1>
 
     <div class="container">
-        <p>
-            Our project endeavors to develop a disease diagnosis system utilizing machine learning algorithms to predict
-            disease likelihood based on input symptoms. The primary goal is to provide users with valuable insights into
-            their health conditions, enabling them to seek timely medical assistance.
-        </p>
-        <p>
-            Currently, there are similar systems available, such as Disease Prediction.ai and Symptoms Checker. While
-            these systems offer valuable services, they may suffer from limitations such as restricted disease coverage
-            and variable data quality.
-        </p>
-        <p>
-            Existing systems may lack comprehensive disease coverage and face challenges related to data quality and
-            representativeness. These limitations underscore the need for a more robust and inclusive solution.
-        </p>
-        <p>
-            Our proposed solution aims to overcome existing limitations by expanding disease coverage and implementing
-            rigorous data validation techniques. By incorporating new features and enhancements, we strive to improve
-            prediction accuracy and reliability.
-        </p>
-        <p>
-            Salient Features:
-        </p>
-        <ul>
-            <li><strong>User-friendly Interface:</strong> Our system provides an intuitive interface for inputting
-                symptoms and receiving disease predictions.</li>
-            <li><strong>Comprehensive Disease Coverage:</strong> We cover a wide range of medical conditions to cater to
-                diverse user populations effectively.</li>
-            <li><strong>Recommended Treatments:</strong> Based on chosen datasets, we offer recommended treatments for
-                identified diseases.</li>
-            <li><strong>Continuous Improvement:</strong> Our system undergoes continuous refinement through data
-                validation and model refinement processes.</li>
-            <li><strong>Integration with Healthcare Professionals:</strong> Seamless integration with healthcare
-                professionals allows for further consultation or guidance.</li>
-        </ul>
-        <p>
-            Tools & Technologies:
-        </p>
-        <ul>
-            <li><strong>Programming Language:</strong> Python</li>
-            <li><strong>Frameworks:</strong> Scikit-learn, TensorFlow, Flask (for web application development)</li>
-            <li><strong>Operating System:</strong> Windows</li>
-        </ul>
+        <table>
+            <tr>
+                <th>Disease</th>
+                <th>Description</th>
+            </tr>
+            {% for index in range(diseases|length) %}
+            <tr>
+                <td>{{ diseases[index] }}</td>
+                <td>{{ descriptions[index] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     <script>
         // Event listener for the Home link
         document.getElementById("homeLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "homePage.html"; // Redirect to home page
+            window.location.href = "/home"; // Redirect to home page
         });
 
         // Event listener for the About link
         document.getElementById("aboutLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "aboutPage.html"; // Redirect to about page
+            window.location.href = "/about"; // Redirect to about page
         });
 
         // Event listener for the Report link
         document.getElementById("reportLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "reportPage.html"; // Redirect to report page
+            window.location.href = "/report"; // Redirect to report page
         });
     </script>
 </body>
