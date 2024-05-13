@@ -168,7 +168,7 @@
 <body>
     <header class="header-bar">
         <div class="logo">
-            <img src="Logo.png" alt="Logo">
+            <img src="{{ url_for('display_image', filename='Logo.png') }}" alt="Logo">
             <span class="twirly-text">DiagnoSense</span>
         </div>
         <nav class="nav-links">
@@ -215,35 +215,54 @@
 
     <script>
         function diagnose() {
-            var symptomsInput = document.getElementById("symptomsInput").value;
+            var symptomsInput = document.getElementById("symptomsInput");
 
-            // Dummy diagnosis result
-            var diagnosisResult = "Based on your symptoms, you may have: <br> - Common cold <br> - Seasonal allergies";
-
-            // Dummy health tips
-            var healthTips = "Drink plenty of fluids and get adequate rest.";
-
-            // Update diagnosis result and health tips
-            document.getElementById("diagnosisResult").innerHTML = diagnosisResult;
-            document.querySelector(".health-tips").innerHTML = "<h2>Health Tips</h2><p>" + healthTips + "</p>";
+            if (symptomsInput) {
+                fetch('/diagnosis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symptoms: symptomsInput.value.trim() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var diagnosisResult = "Based on your symptoms (" + symptomsInput.value.trim() +  ") , you may have: <br>" + data.disease + "<br><h3>Description</h3><p>" + data.description + "</p>";
+                    var healthTips = data.precautions;
+                    
+                    // Update diagnosis result and health tips
+                    document.getElementById("diagnosisResult").innerHTML = diagnosisResult;
+                    document.querySelector(".health-tips").innerHTML = "<h2>Health Tips</h2><p>" + healthTips + "</p>" + "<h2>Medications</h2><p>" + data.medications + "</p>";
+                // Display diagnosis result
+                // For example, you can append it to an HTML element with id "diagnosisResult"
+                document.getElementById("diagnosisResult").innerHTML = diagnosisResult;
+                symptomsInput.value = ""
+            } else {
+                // If diagnosis failed, display error message
+                alert(data.message);
+            }
+            })
+            }
+            
         }
 
         // Event listener for the About link
         document.getElementById("aboutLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "aboutPage.html"; // Redirect to about page
+            window.location.href = "/about"; // Redirect to about page
         });
 
         // Event listener for the Diseases link
         document.getElementById("diseasesLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "diseasesPage.html"; // Redirect to diseases page
+            window.location.href = "/diseases"; // Redirect to diseases page
         });
 
         // Event listener for the Report link
         document.getElementById("reportLink").addEventListener("click", function (event) {
             event.preventDefault(); // Prevent default link behavior
-            window.location.href = "reportPage.html"; // Redirect to report page
+            window.location.href = "/report"; // Redirect to report page
         });
 
     </script>
