@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -21,19 +22,19 @@ def initializeDTC():
     X = data.iloc[:, :-1]  # Select all columns except the last one
     y = data.iloc[:, -1]   # Select only the last column
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
     dtc = DecisionTreeClassifier(ccp_alpha=0.01)
     dtc = dtc.fit(X_train, y_train)
     predictions = dtc.predict(X_test)
     
-    evaluateModel(y_test, predictions)
+    evaluateModel(y_test, predictions, "dt")
 
     le = LabelEncoder()
     le.fit(y)
     Y = le.transform(y)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
 
     dtc = DecisionTreeClassifier(ccp_alpha=0.01)
     dtc = dtc.fit(X_train, y_train)
@@ -45,18 +46,53 @@ def initializeDTC():
     pickle.dump(dtc, open("models/dtc.pkl", "wb"))
 
     return dtc
+
+def initializeRF():
+    # Load the dataset
+    data = pd.read_csv("Data/Training.csv")
+
+    # Separate features (X) and target variable (y)
+    X = data.iloc[:, :-1]  # Select all columns except the last one
+    y = data.iloc[:, -1]   # Select only the last column
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
-def getPrediction(user_symptoms):
-    check_file = os.path.exists("models/dtc.pkl")
+    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf = rf.fit(X_train, y_train)
+    predictions = rf.predict(X_test)
+    
+    evaluateModel(y_test, predictions, "rf")
+
+    le = LabelEncoder()
+    le.fit(y)
+    Y = le.transform(y)
+
+    print(Y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
+
+    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf = rf.fit(X_train, y_train)
+    predictions = rf.predict(X_test)
+
+    # Create a DataFrame with predictions
+    predictions_df = pd.DataFrame({'Predictions': predictions})
+
+    pickle.dump(rf, open("models/rf.pkl", "wb"))
+
+    return rf
+
+def getPrediction(user_symptoms, model):
+    check_file = os.path.exists("models/" + model + ".pkl")
 
     if check_file:
-        print('file')
-        with open("models/dtc.pkl", "rb") as file:
-            dtc = pickle.load(file)
+        print('file '+ model)
+        with open("models/"  + model + ".pkl", "rb") as file:
+            model = pickle.load(file)
     else:
-        dtc = initializeDTC()
+        model = initializeDTC()
 
-    prediction = diseases_list[dtc.predict(user_symptoms)[0]]
+    prediction = diseases_list[model.predict(user_symptoms)[0]]
     return prediction
 
 def getDescription(disease):
@@ -83,7 +119,7 @@ def getMedications(disease):
     # print(med)
     return med
 
-def evaluateModel(y_true, y_pred):
+def evaluateModel(y_true, y_pred, model):
     # Calculate accuracy
     accuracy = accuracy_score(y_true, y_pred)
 
@@ -92,7 +128,7 @@ def evaluateModel(y_true, y_pred):
     conf_matrix = pd.DataFrame(confusion_matrix(y_true, y_pred))
 
     # Open a text file in write mode
-    with open("evaluation.txt", "w") as file:
+    with open(model + ".txt", "w") as file:
         # Write accuracy to the file
         file.write(f'Accuracy: {accuracy}\n\n')
         
@@ -131,7 +167,7 @@ def diagnosis():
             return jsonify({'success': False,'message': message})
         
     processed_symptoms = processInput(set(user_symptoms))
-    disease = getPrediction(processed_symptoms)
+    disease = getPrediction(processed_symptoms, "rf")
 
     description = getDescription(disease)
 
