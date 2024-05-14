@@ -22,14 +22,18 @@ def initializeDTC():
     X = data.iloc[:, :-1]  # Select all columns except the last one
     y = data.iloc[:, -1]   # Select only the last column
 
+    # Split the data into training and testing data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
+    # Call DecisionTreeClassifier constructor, fit and predict 
     dtc = DecisionTreeClassifier(ccp_alpha=0.01)
     dtc = dtc.fit(X_train, y_train)
     predictions = dtc.predict(X_test)
     
+    # Call evaluate model function that, save metrics to txt file
     evaluateModel(y_test, predictions, "dt")
 
+    # Encode catagorical data
     le = LabelEncoder()
     le.fit(y)
     Y = le.transform(y)
@@ -40,14 +44,13 @@ def initializeDTC():
     dtc = dtc.fit(X_train, y_train)
     predictions = dtc.predict(X_test)
 
-    # Create a DataFrame with predictions
-    predictions_df = pd.DataFrame({'Predictions': predictions})
+    # save model in pkl file
+    pickle.dump(dtc, open("models/dt.pkl", "wb"))
 
-    pickle.dump(dtc, open("models/dtc.pkl", "wb"))
-
+    # return model instance
     return dtc
 
-def initializeRF():
+def initializeRFC():
     # Load the dataset
     data = pd.read_csv("Data/Training.csv")
 
@@ -55,14 +58,18 @@ def initializeRF():
     X = data.iloc[:, :-1]  # Select all columns except the last one
     y = data.iloc[:, -1]   # Select only the last column
 
+    # Split the data into training and testing data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     
+    # Call RandomForestClassifier constructor, fit and predict 
     rf = RandomForestClassifier(n_estimators=100, random_state=42)
     rf = rf.fit(X_train, y_train)
     predictions = rf.predict(X_test)
     
+    # Call evaluate model function that, save metrics to txt file
     evaluateModel(y_test, predictions, "rf")
 
+    # Call evaluate model function that, save metrics to txt file
     le = LabelEncoder()
     le.fit(y)
     Y = le.transform(y)
@@ -75,45 +82,56 @@ def initializeRF():
     rf = rf.fit(X_train, y_train)
     predictions = rf.predict(X_test)
 
-    # Create a DataFrame with predictions
-    predictions_df = pd.DataFrame({'Predictions': predictions})
-
+    # save model in pkl file
     pickle.dump(rf, open("models/rf.pkl", "wb"))
 
+    # return model instance
     return rf
 
 def getPrediction(user_symptoms, model):
     check_file = os.path.exists("models/" + model + ".pkl")
 
+    # check if model pkl file exists already
     if check_file:
         print('file '+ model)
         with open("models/"  + model + ".pkl", "rb") as file:
             model = pickle.load(file)
     else:
-        model = initializeDTC()
+        # initialize model
+        if model == "dt":
+            model = initializeDTC()
+        elif model == "rf":
+            model = initializeRFC()
 
+    # call predict function with processed user symptoms list as argument
     prediction = diseases_list[model.predict(user_symptoms)[0]]
     return prediction
 
 def getDescription(disease):
+    # get description data from csv file
     description = pd.read_csv("Data/description.csv")
 
+    # get description for predicted disease
     desc = description[description['Disease'] == disease]['Description']
     desc = " ".join([w for w in desc])
     # print(desc)
     return desc
 
 def getPrecautions(disease):
+    # get precautions data from csv file
     precautions = pd.read_csv("Data/precaution.csv")
 
+    # get precautions for predicted disease
     pre = precautions[precautions['Disease'] == disease][['Precaution_1', 'Precaution_2', 'Precaution_3', 'Precaution_4']]
     pre = [col for col in pre.values]
     # print(pre)
     return pre
 
 def getMedications(disease):
+    # get medications data from csv file
     medications = pd.read_csv("Data/medications.csv")
 
+    # get medications for predicted disease
     med = medications[medications['Disease'] == disease]['Medication']
     med = [med for med in med.values]
     # print(med)
@@ -123,8 +141,10 @@ def evaluateModel(y_true, y_pred, model):
     # Calculate accuracy
     accuracy = accuracy_score(y_true, y_pred)
 
+    # Get classification report
     classification_rep = classification_report(y_true, y_pred)
 
+    # Get Confusion Matrix
     conf_matrix = pd.DataFrame(confusion_matrix(y_true, y_pred))
 
     # Open a text file in write mode
@@ -141,36 +161,43 @@ def evaluateModel(y_true, y_pred, model):
         file.write("Confusion Matrix:\n")
         file.write(conf_matrix.to_string(index=False))  # Writing confusion matrix without row indices
 
-
 def processInput(input):
+    # Initialize processed_input as an array of size of total number of symptoms with zeros 
     processed_input = np.zeros(len(symptoms_dict))
     
+    # Change value to 1 if the symptom is in user input list
     for item in input:
         processed_input[symptoms_dict[item]] = 1
     return processed_input.reshape(1, -1)
 
 @app.route('/diagnosis', methods=['POST'])
 def diagnosis():
+    # get user symptoms input from front end
     data = request.get_json()
     symptoms = data.get('symptoms')
     print(symptoms)
-
 
     # Split the user's input into a list of symptoms (assuming they are comma-separated)
     user_symptoms = [s.strip() for s in symptoms.split(',')]
     # Remove any extra characters, if any
     user_symptoms = [symptom.strip("[]' ") for symptom in user_symptoms]
 
+    # Check user input if it matches the symptoms in dataset 
     for s in user_symptoms:
         if s not in symptoms_dict:
             message = "Please make sure the spellings are correct"
             return jsonify({'success': False,'message': message})
-        
+    
+    # Process user symptoms to 1s and 0s
     processed_symptoms = processInput(set(user_symptoms))
+
+    # Get predicted disease, change second argument to rf for Random forest or dtc for Decision Tree
     disease = getPrediction(processed_symptoms, "rf")
 
+    # Get description of predicted disease
     description = getDescription(disease)
 
+    # Get precautions of predicted disease
     precautions = list(getPrecautions(disease))
     print(disease)
     print(precautions)
@@ -179,16 +206,15 @@ def diagnosis():
     for i in precautions[0]:
         my_precautions.append(i.capitalize())
 
+    # Get medications of predicted disease
     medications = getMedications(disease)
     print(medications)
 
+    # Send data to front end
     return jsonify({'success': True,'disease': disease, 'description' : description, 'precautions': my_precautions, 'medications': medications})
 
-@app.route('/report')
-def report():
-    return render_template("reportPage.html")
-
 @app.route('/diseases')
+# render diseasesPage
 def disease():
     # Read the CSV file
     data = pd.read_csv("Data/description.csv")
@@ -198,22 +224,26 @@ def disease():
     # Access the 'Description' column as a list
     description_list = data['Description'].tolist()
 
-    # Print both lists
     # print("Disease List:", disease_list)
     # print("Description List:", description_list)
+
+    # Send data to front end
     return render_template("diseasesPage.html", diseases = diseases_list, descriptions = description_list)
 
 @app.route('/about')
 def about():
+# render aboutPage
     return render_template("aboutPage.html")
 
-@app.route('/home')
-def contact():
+@app.route('/')
+def index():
+    # Render homePage
     return render_template("homePage.html")
 
 @app.route('/display/<filename>')
 def display_image(filename):
     print(filename)
+    # get Logo.png
     return redirect(url_for('static', filename= 'images/' + filename), code=301)
 
 if __name__ == "__main__":
