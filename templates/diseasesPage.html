@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us</title>
     <style>
-        /* Your CSS styles for about page can go here */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,14 +15,12 @@
         .container {
             max-width: 1200px;
             margin: 20px auto;
-            /* Adjusted margin for better alignment */
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Your existing header bar styles */
         .header-bar {
             background-color: #fff;
             padding: 10px 20px;
@@ -67,28 +64,6 @@
             background-clip: text;
             color: transparent;
         }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-bar input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: none;
-            margin-right: 10px;
-        }
-
-        .search-bar button {
-            padding: 8px 15px;
-            background-color: #ff8400;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
     </style>
 </head>
 
@@ -102,15 +77,12 @@
             <a href="#" id="homeLink">Home</a>
             <a href="#" id="aboutLink">About</a>
             <a href="#">Diseases</a>
-            <a href="#" id="reportLink">Report</a>
         </nav>
         <div class="search-bar">
             <input type="text" placeholder="Search...">
             <button>Search</button>
         </div>
     </header>
-
-    <h1>THIS IS THE DISEASES PAGE</h1>
 
     <div class="container">
         <table>
@@ -129,20 +101,14 @@
     <script>
         // Event listener for the Home link
         document.getElementById("homeLink").addEventListener("click", function (event) {
-            event.preventDefault(); // Prevent default link behavior
-            window.location.href = "/home"; // Redirect to home page
+            event.preventDefault();
+            window.location.href = "/home";
         });
 
         // Event listener for the About link
         document.getElementById("aboutLink").addEventListener("click", function (event) {
-            event.preventDefault(); // Prevent default link behavior
-            window.location.href = "/about"; // Redirect to about page
-        });
-
-        // Event listener for the Report link
-        document.getElementById("reportLink").addEventListener("click", function (event) {
-            event.preventDefault(); // Prevent default link behavior
-            window.location.href = "/report"; // Redirect to report page
+            event.preventDefault();
+            window.location.href = "/about";
         });
     </script>
 </body>
