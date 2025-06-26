@@ -138,7 +138,7 @@
 <body>
     <header class="header-bar">
         <div class="logo">
-            <img src="{{ url_for('display_image', filename='Logo.png') }}" alt="Logo">
+            <img src="{{ url_for('display_image', filename='logo.png') }}" alt="Logo">
             <span class="twirly-text">DiagnoSense</span>
         </div>
         <nav class="nav-links">
@@ -182,7 +182,7 @@
         function diagnose() {
             var symptomsInput = document.getElementById("symptomsInput");
 
-            if (symptomsInput) {
+            if (symptomsInput.value.trim() !== "") {
                 fetch('/diagnosis', {
                     method: 'POST',
                     headers: {
@@ -193,7 +193,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            var diagnosisResult = "Based on your symptoms (" + symptomsInput.value.trim() + ") , you may have: <br>" + data.disease + "<br><h3>Description</h3><p>" + data.description + "</p>";
+                            var diagnosisResult = "Based on your symptoms (" + symptomsInput.value.trim() + "), you may have: <br>" + data.disease + "<br><h3>Description</h3><p>" + data.description + "</p>";
                             var healthTips = data.precautions;
 
                             // Update diagnosis result and health tips
