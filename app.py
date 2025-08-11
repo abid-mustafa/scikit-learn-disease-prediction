@@ -260,26 +260,3 @@ def display_image(filename):
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=port, debug=True)
-
-
-    import pandas as pd
-
-file_path = "data/training.csv"  # Adjust path
-
-# Read CSV with skipinitialspace to handle spaces after delimiters
-df = pd.read_csv(file_path, header=0, skipinitialspace=True)
-
-# Clean string columns
-for index, row in df.iterrows():
-    for col in df.columns:
-        if df[col].dtype == object:
-            # Replace non-breaking spaces with normal space
-            df[col] = df[col].str.replace('\xa0', ' ', regex=False)
-            # Replace multiple spaces with single space and strip leading/trailing spaces
-            df[col] = df[col].str.replace(r'\s+', ' ', regex=True).str.strip()
-
-# Drop unnamed columns
-df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-
-# Save cleaned CSV
-df.to_csv(file_path, index=False)
