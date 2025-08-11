@@ -1,55 +1,61 @@
 # Disease Prediction Web App using Scikit-learn
 
-## Introduction
+## Description
 
-This is a disease prediction web application developed as a part of our 3rd Year Artificial Intelligence Project. The system uses supervised machine learning models - **Decision Tree Classifier** and **Random Forest Classifier** - to predict diseases based on symptoms input by the user. The backend is implemented using **Flask**, and the frontend was developed using **HTML**, **CSS**, and **JavaScript**.
+A web application that predicts diseases based on user-reported symptoms.
 
-Random Forest outperformed the Decision Tree in accuracy and robustness, as documented in the model evaluation text files.
+This is a disease prediction web application developed as a part of our 3rd Year Artificial Intelligence Project. Built using Flask for the backend, HTML, CSS, and JavaScript for the frontend, and Scikit-learn for machine learning, it offers predictions, disease descriptions, precautions, and medication suggestions.
 
 ---
 
 ## Features
 
-- Predicts disease from a list of symptoms.
-- Two ML models: Decision Tree and Random Forest (default).
-- Disease descriptions, precautions, and medication suggestions.
-- Dynamic frontend connected via Flask APIs.
-- Includes model evaluation reports (accuracy, confusion matrix, classification report).
+* Predicts disease from a list of symptoms.
+* Two ML models: Decision Tree and Random Forest (default).
+* Disease descriptions, precautions, and medication suggestions.
+* Dynamic frontend connected via Flask APIs.
+* Includes model evaluation reports (accuracy, confusion matrix, classification report).
 
 ---
 
 ## Demo
 
-<p align="center">
- <img src="https://github.com/user-attachments/assets/c018ed5d-e819-413c-b417-2d8cb242c42f" alt="Disease Prediction Demo" width="600"/>
-</p>
+![Disease Prediction Demo](https://github.com/user-attachments/assets/c018ed5d-e819-413c-b417-2d8cb242c42f)
+
+---
 
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/abid-mustafa/scikit-learn-disease-prediction.git
    cd scikit-learn-disease-prediction
    ```
 
 2. **Set up a virtual environment**
+
    ```bash
    python -m venv venv
    source venv/bin/activate   # On Windows: venv\Scripts\activate
    ```
 
 3. **Install required packages**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Set environment variable**
    Create a `.env` file:
+
    ```env
-   MODEL_TYPE=rf
+   MODEL_TYPE=rfc
+   PORT=5500
    ```
 
 5. **Run the application**
+
    ```bash
    python app.py
    ```
@@ -60,23 +66,24 @@ Random Forest outperformed the Decision Tree in accuracy and robustness, as docu
 
 ## Usage
 
-- Navigate to the homepage and enter your symptoms as a comma-separated list.
-- The system returns the most likely disease, its description, possible medications, and recommended precautions.
-- You can explore a list of all supported diseases via the `/diseases` route.
+* Navigate to the homepage and enter your symptoms as a comma-separated list.
+* The system returns the most likely disease, its description, possible medications, and recommended precautions.
+* Explore a list of all supported diseases via the `/diseases` route.
 
 ---
 
 ## API Endpoints
 
-| Endpoint          | Method | Description                            |
-|-------------------|--------|----------------------------------------|
-| `/`               | GET    | Homepage                               |
-| `/diagnosis`      | POST   | Accepts symptoms, returns prediction   |
-| `/diseases`       | GET    | Lists all diseases and descriptions    |
-| `/about`          | GET    | About the project                      |
-| `/display/<file>` | GET    | Serves static images                   |
+| Endpoint          | Method | Description                          |
+| ----------------- | ------ | ------------------------------------ |
+| `/`               | GET    | Homepage                             |
+| `/diagnosis`      | POST   | Accepts symptoms, returns prediction |
+| `/diseases`       | GET    | Lists all diseases and descriptions  |
+| `/about`          | GET    | About the project                    |
+| `/display/<file>` | GET    | Serves static images                 |
 
 **POST `/diagnosis` Payload Example:**
+
 ```json
 {
   "symptoms": "headache, fatigue, nausea"
@@ -85,15 +92,14 @@ Random Forest outperformed the Decision Tree in accuracy and robustness, as docu
 
 ---
 
-## ⚙️ Configuration
-
-Environment variables used:
+## Configuration
 
 | Variable     | Description                            | Default |
-|--------------|----------------------------------------|---------|
-| `MODEL_TYPE` | Machine learning model: `dt` or `rf`   | `dt`    |
+| ------------ | -------------------------------------- | ------- |
+| `MODEL_TYPE` | Machine learning model: `dtc` or `rfc` | `rfc`   |
+| `PORT`       | Port for Flask server                  | `5500`  |
 
-You can modify this in the `.env` file to switch between models.
+Modify in `.env` file to switch between models or change port.
 
 ---
 
@@ -103,21 +109,22 @@ You can modify this in the `.env` file to switch between models.
 .
 ├── app.py
 ├── models/
-│   ├── dt.pkl
-│   └── rf.pkl
+│   ├── dtc.pkl
+│   └── rfc.pkl
 ├── data/
 │   ├── training.csv
 │   ├── description.csv
 │   ├── precaution.csv
 │   └── medications.csv
+├── evaluation_reports/
+│   ├── dtc.txt
+│   ├── rfc.txt
 ├── templates/
 │   ├── homePage.html
 │   ├── diseasesPage.html
 │   └── aboutPage.html
 ├── static/
 │   └── images/
-├── rf.txt
-├── dt.txt
 ├── .env
 └── requirements.txt
 ```
@@ -128,22 +135,24 @@ You can modify this in the `.env` file to switch between models.
 
 Required Python packages (see `requirements.txt`):
 
-- Flask
-- numpy
-- pandas
-- scikit-learn
-- python-dotenv
+* Flask
+* numpy
+* pandas
+* scikit-learn
+* python-dotenv
 
 ---
 
 ## Examples
 
 ### Input
+
 ```
-Symptoms: ["fever", "headache", "fatigue", "cough"]
+symptoms: ["fever", "headache", "fatigue", "cough"]
 ```
 
 ### Output
+
 ```json
 {
   "success": true,
@@ -160,22 +169,35 @@ Symptoms: ["fever", "headache", "fatigue", "cough"]
 ```
 
 ---
+## Data Files (CSV)
+
+| Filename          | Description                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------- |
+| `training.csv`    | Symptom columns with binary features and corresponding disease labels for model training.            |
+| `description.csv` | Disease names mapped to their detailed descriptions for display.                                     |
+| `precaution.csv`  | Precautionary measures associated with each disease.                                                 |
+| `medications.csv` | Recommended medications for each disease.                                                            |
+| `dataset.csv`     | Raw/example dataset including disease names and symptom presence, used for exploration or reference. |
+
+All CSV files are located in the `data/` directory and are required for training, prediction, and information retrieval in the application.
+
+---
 
 ## Troubleshooting
 
-- **Model file not found:** If `models/dt.pkl` or `models/rf.pkl` doesn't exist, it will be auto-generated on first request using training data.
-- **Incorrect symptom name:** Ensure input symptoms match keys in the dataset (`symptoms_dict`). Spelling matters.
-- **Port already in use:** Change the port in `app.py` (`app.run(port=5500)`) if necessary.
+* **Model file not found:** If `models/dtc.pkl` or `models/rfc.pkl` don't exist, they will be auto-generated on first request from training data.
+* **Incorrect symptom name:** Input symptoms must exactly match dataset keys (`symptoms_dict`). Spelling matters.
+* **Port already in use:** Change port in `.env` or `app.py` (`app.run(port=5500)`) if needed.
 
 ---
 
 ## Contributors
 
-- **S. M. Abid Mustafa** - Backend, Machine Learning Integration
-- **Abrar Shah** - https://github.com/sAbrarShah - Frontend (HTML, CSS, JavaScript) 
+* **S. M. Abid Mustafa** - Backend, Machine Learning Integration
+* **Abrar Shah** - Frontend (HTML, CSS, JavaScript)
 
 ---
 
 ## License
 
-This project is intended for academic purposes and not licensed for production use. For inquiries, please contact the project authors.
+For academic use only. Not licensed for production. Contact project authors for inquiries.
