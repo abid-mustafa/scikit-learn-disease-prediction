@@ -11,7 +11,7 @@ This is a disease prediction web application developed as a part of our 3rd Year
 ## Features
 
 * Predicts disease from a list of symptoms.
-* Two ML models: Decision Tree and Random Forest (default).
+* Two ML models: Decision Tree (default) and Random Forest.
 * Disease descriptions, precautions, and medication suggestions.
 * Dynamic frontend connected via Flask APIs.
 * Includes model evaluation reports (accuracy, confusion matrix, classification report).
@@ -20,7 +20,23 @@ This is a disease prediction web application developed as a part of our 3rd Year
 
 ## Demo
 
-![Disease Prediction Demo](https://github.com/user-attachments/assets/c018ed5d-e819-413c-b417-2d8cb242c42f)
+### Home Page
+<kbd> ![Home Page](https://github.com/user-attachments/assets/3735a368-0faf-4735-8825-b44d00fedce6) </kbd>
+
+---
+
+### About Page
+<kbd> ![About Page](https://github.com/user-attachments/assets/888c816e-d278-472f-94c5-f80843fa801b) </kbd>
+
+---
+
+### Diseases Page
+<kbd> ![Diseases Page](https://github.com/user-attachments/assets/f4f8c7bc-4e59-4dd5-aad1-e85a6852e916) </kbd>
+
+---
+
+### Live Demo
+<kbd> ![Live Demo](https://github.com/user-attachments/assets/a931f3d4-f599-40a5-8731-097584bcad33) </kbd>
 
 ---
 
@@ -37,7 +53,7 @@ This is a disease prediction web application developed as a part of our 3rd Year
 
    ```bash
    python -m venv venv
-   source venv/bin/activate   # On Windows: venv\Scripts\activate
+   venv\Scripts\activate   # On MacOS/Linux: source venv/bin/activate
    ```
 
 3. **Install required packages**
@@ -50,7 +66,7 @@ This is a disease prediction web application developed as a part of our 3rd Year
    Create a `.env` file:
 
    ```env
-   MODEL_TYPE=rfc
+   MODEL_TYPE=dtc
    PORT=5500
    ```
 
@@ -86,72 +102,11 @@ This is a disease prediction web application developed as a part of our 3rd Year
 
 ```json
 {
-  "symptoms": "headache, fatigue, nausea"
+  "symptoms": "fever, headache, fatigue, cough"
 }
 ```
 
----
-
-## Configuration
-
-| Variable     | Description                            | Default |
-| ------------ | -------------------------------------- | ------- |
-| `MODEL_TYPE` | Machine learning model: `dtc` or `rfc` | `rfc`   |
-| `PORT`       | Port for Flask server                  | `5500`  |
-
-Modify in `.env` file to switch between models or change port.
-
----
-
-## Project Structure
-
-```
-.
-├── app.py
-├── models/
-│   ├── dtc.pkl
-│   └── rfc.pkl
-├── data/
-│   ├── training.csv
-│   ├── description.csv
-│   ├── precaution.csv
-│   └── medications.csv
-├── evaluation_reports/
-│   ├── dtc.txt
-│   ├── rfc.txt
-├── templates/
-│   ├── homePage.html
-│   ├── diseasesPage.html
-│   └── aboutPage.html
-├── static/
-│   └── images/
-├── .env
-└── requirements.txt
-```
-
----
-
-## Dependencies
-
-Required Python packages (see `requirements.txt`):
-
-* Flask
-* numpy
-* pandas
-* scikit-learn
-* python-dotenv
-
----
-
-## Examples
-
-### Input
-
-```
-symptoms: ["fever", "headache", "fatigue", "cough"]
-```
-
-### Output
+**POST `/diagnosis` Response Example:**
 
 ```json
 {
@@ -167,6 +122,29 @@ symptoms: ["fever", "headache", "fatigue", "cough"]
   "medications": ["Paracetamol", "Cough Syrup"]
 }
 ```
+
+---
+
+## Configuration
+
+| Variable     | Description                            | Default |
+| ------------ | -------------------------------------- | ------- |
+| `MODEL_TYPE` | Machine learning model: `dtc` or `rfc` | `dtc`   |
+| `PORT`       | Port for Flask server                  | `5500`  |
+
+Modify in `.env` file to switch between models or change port.
+
+---
+
+## Dependencies
+
+Required Python packages (see `requirements.txt`):
+
+* Flask
+* numpy
+* pandas
+* scikit-learn
+* python-dotenv
 
 ---
 ## Data Files (CSV)
@@ -186,18 +164,16 @@ All CSV files are located in the `data/` directory and are required for training
 ## Troubleshooting
 
 * **Model file not found:** If `models/dtc.pkl` or `models/rfc.pkl` don't exist, they will be auto-generated on first request from training data.
-* **Incorrect symptom name:** Input symptoms must exactly match dataset keys (`symptoms_dict`). Spelling matters.
-* **Port already in use:** Change port in `.env` or `app.py` (`app.run(port=5500)`) if needed.
+* **Incorrect symptom name:** Input symptoms must exactly match dataset keys (`symptoms_dict`). Spelling and spacing matters.
 
 ---
 
 ## Contributors
 
-* **S. M. Abid Mustafa** - Backend, Machine Learning Integration
+* **Abid Mustafa** - Backend, Machine Learning Integration
 * **Abrar Shah** - Frontend (HTML, CSS, JavaScript)
 
 ---
 
-## License
-
+## LICENSE
 For academic use only. Not licensed for production. Contact project authors for inquiries.
