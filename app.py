@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
-model_type = os.getenv("MODEL_TYPE", "rfc")  # default to 'rfc' if not set
+model_type = os.getenv("MODEL_TYPE", "dtc")  # default to 'dtc' if not set
 port = int(os.getenv("PORT", 5500))  # default to 5500 if not set
 import numpy as np
 import pandas as pd
@@ -28,8 +28,6 @@ def load_diseases_list(csv_path="data/description.csv"):
 
 symptoms_dict = load_symptoms_dict()
 diseases_list = load_diseases_list()
-
-print(symptoms_dict)
 
 def initializeDTC():
     # Load the dataset
